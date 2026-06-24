@@ -69,4 +69,4 @@ MIT License - 自由使用、修改、分发
 
 ---
 
-**作者**: JoeSec | **GitHub**: [JoeSec/PowerToysPasswordGenerator](https://github.com/JoeSec/PowerToysPasswordGenerator)
+**作者**: JoeSec | **GitHub**: [Sec-Joe/PowerToys-Run-Password-Generator](https://github.com/Sec-Joe/PowerToys-Run-Password-Generator)
