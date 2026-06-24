@@ -1,0 +1,13 @@
+{
+  "ID": "PasswordGenerator",
+  "Name": "Password Generator",
+  "Author": "JoeSec",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/JoeSec/PowerToysPasswordGenerator",
+  "Disabled": false,
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.PasswordGenerator.dll",
+  "ActionKeyword": "pw",
+  "IcoPathDark": "Images\\icon.png",
+  "IcoPathLight": "Images\\icon.png"
+}
