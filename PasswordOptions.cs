@@ -79,10 +79,10 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
         /// </summary>
         public void Validate()
         {
-            // Clamp length to valid range
-            if (Length < 8)
+            // Clamp length to valid range (allow 4-64 for PIN codes)
+            if (Length < 4)
             {
-                Length = 8;
+                Length = 4;
             }
             else if (Length > 64)
             {

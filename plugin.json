@@ -4,7 +4,7 @@
   "Author": "JoeSec",
   "Version": "1.0.0",
   "Language": "csharp",
-  "Website": "https://github.com/JoeSec/PowerToysPasswordGenerator",
+  "Website": "https://github.com/Sec-Joe/PowerToys-Run-Password-Generator",
   "Disabled": false,
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.PasswordGenerator.dll",
   "ActionKeyword": "pw",

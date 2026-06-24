@@ -43,6 +43,12 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
             // Generate password using Fisher-Yates shuffle with CSPRNG
             char[] password = GeneratePasswordInternal(pool, options.Length);
             
+            // Ensure password doesn't start or end with symbols
+            if (options.IncludeSymbols)
+            {
+                password = FixSymbolEdges(password, pool, options);
+            }
+            
             // Verify minimum requirements
             EnsureMinimumRequirements(password, options);
             
@@ -110,6 +116,45 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
                     int randomIndex = Math.Abs(BitConverter.ToInt32(randomBytes, 0)) % poolArray.Length;
                     
                     password[i] = poolArray[randomIndex];
+                }
+            }
+            
+            return password;
+        }
+
+        /// <summary>
+        /// Ensure password doesn't start or end with symbol characters
+        /// Replaces edge symbols with alphanumeric characters
+        /// </summary>
+        private static char[] FixSymbolEdges(char[] password, string pool, PasswordOptions options)
+        {
+            // Build alphanumeric pool (no symbols) for replacement
+            var alphaPool = new StringBuilder();
+            if (options.IncludeUppercase) alphaPool.Append(UPPERCASE);
+            if (options.IncludeLowercase) alphaPool.Append(LOWERCASE);
+            if (options.IncludeDigits) alphaPool.Append(DIGITS);
+            
+            string alphaChars = alphaPool.ToString();
+            if (string.IsNullOrEmpty(alphaChars)) return password; // All symbols, can't fix
+            
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                // Fix first character if it's a symbol
+                if (SYMBOLS.Contains(password[0]))
+                {
+                    byte[] rnd = new byte[4];
+                    rng.GetBytes(rnd);
+                    int idx = Math.Abs(BitConverter.ToInt32(rnd, 0)) % alphaChars.Length;
+                    password[0] = alphaChars[idx];
+                }
+                
+                // Fix last character if it's a symbol
+                if (SYMBOLS.Contains(password[password.Length - 1]))
+                {
+                    byte[] rnd = new byte[4];
+                    rng.GetBytes(rnd);
+                    int idx = Math.Abs(BitConverter.ToInt32(rnd, 0)) % alphaChars.Length;
+                    password[password.Length - 1] = alphaChars[idx];
                 }
             }
             

@@ -59,12 +59,12 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
         {
             var results = new List<Result>();
             
-            if (query == null || string.IsNullOrWhiteSpace(query.Search))
+            if (query == null)
             {
                 return results;
             }
 
-            string input = query.Search.Trim();
+            string input = query.Search?.Trim() ?? "";
             
             // Parse command
             var command = ParseCommand(input);
@@ -73,6 +73,11 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
             {
                 // Handle "pw last" - show last generated password
                 results.Add(CreateLastPasswordResult());
+            }
+            else if (command.ShowHelp)
+            {
+                // Show help/usage
+                results.AddRange(CreateHelpResults());
             }
             else
             {
@@ -111,15 +116,30 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
         private PasswordCommand ParseCommand(string input)
         {
             var command = new PasswordCommand();
-            var parts = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             
-            if (parts.Length == 0)
+            // Handle empty input - generate default password
+            if (string.IsNullOrWhiteSpace(input))
             {
                 command.Options = PasswordOptions.Default;
                 return command;
             }
+            
+            // Check for help command
+            if (input.ToLower() == "help" || input == "?")
+            {
+                command.ShowHelp = true;
+                return command;
+            }
+            
+            var parts = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Check for special commands
+            if (parts[0].ToLower() == "help" || parts[0].ToLower() == "-h" || parts[0].ToLower() == "--help")
+            {
+                command.ShowHelp = true;
+                return command;
+            }
+            
             if (parts[0].ToLower() == "last")
             {
                 command.IsLastCommand = true;
@@ -276,10 +296,93 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
         {
             return new Result
             {
-                Title = "Regenerate with different options",
-                SubTitle = "Try: pw 20, pw pin, pw wifi, pw 16 -nosym",
+                Title = "🔄 Regenerate",
+                SubTitle = "pw 20 · pw pin · pw wifi · pw 16 -nosym",
                 IcoPath = "Images\\icon.png",
                 Score = 50
+            };
+        }
+
+        /// <summary>
+        /// Create help results showing all supported commands
+        /// </summary>
+        private List<Result> CreateHelpResults()
+        {
+            return new List<Result>
+            {
+                new Result
+                {
+                    Title = "📋 Password Generator",
+                    SubTitle = "Secure random passwords · FIPS 140-2 CSPRNG",
+                    IcoPath = "Images\\icon.png",
+                    Score = 100
+                },
+                new Result
+                {
+                    Title = "pw",
+                    SubTitle = "Default 16-char password",
+                    IcoPath = "Images\\icon.png",
+                    Score = 90,
+                    Action = (context) =>
+                    {
+                        string pw = SecurePasswordGenerator.Generate(PasswordOptions.Default);
+                        SessionState.Instance.SetLastPassword(pw, PasswordOptions.Default);
+                        CopyToClipboard(pw);
+                        ShowToast("Password copied to clipboard");
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = "pw <length>",
+                    SubTitle = "Custom length (8-64 chars)",
+                    IcoPath = "Images\\icon.png",
+                    Score = 85
+                },
+                new Result
+                {
+                    Title = "pw pin",
+                    SubTitle = "6-digit numeric PIN code",
+                    IcoPath = "Images\\icon.png",
+                    Score = 80,
+                    Action = (context) =>
+                    {
+                        string pw = SecurePasswordGenerator.Generate(PasswordOptions.Pin);
+                        SessionState.Instance.SetLastPassword(pw, PasswordOptions.Pin);
+                        CopyToClipboard(pw);
+                        ShowToast("PIN copied to clipboard");
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = "pw wifi",
+                    SubTitle = "20-char WiFi-friendly password",
+                    IcoPath = "Images\\icon.png",
+                    Score = 75,
+                    Action = (context) =>
+                    {
+                        string pw = SecurePasswordGenerator.Generate(PasswordOptions.Wifi);
+                        SessionState.Instance.SetLastPassword(pw, PasswordOptions.Wifi);
+                        CopyToClipboard(pw);
+                        ShowToast("WiFi password copied to clipboard");
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = "pw last",
+                    SubTitle = "Recall last generated password",
+                    IcoPath = "Images\\icon.png",
+                    Score = 70
+                },
+                new Result
+                {
+                    Title = "Flags",
+                    SubTitle = "-nosym · -nosim · -noupper · -nolower · -nodigit",
+                    IcoPath = "Images\\icon.png",
+                    Score = 65
+                }
             };
         }
 
@@ -342,5 +445,6 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
     {
         public PasswordOptions Options { get; set; } = PasswordOptions.Default;
         public bool IsLastCommand { get; set; } = false;
+        public bool ShowHelp { get; set; } = false;
     }
 }

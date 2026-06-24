@@ -125,11 +125,11 @@ namespace Community.PowerToys.Run.Plugin.PasswordGenerator
                 return $"{(int)(seconds / 3600)} hours";
             if (seconds < 31536000)
                 return $"{(int)(seconds / 86400)} days";
-            if (seconds < 31536000 * 100)
+            if (seconds < 31536000L * 100)
                 return $"{(int)(seconds / 31536000)} years";
-            if (seconds < 31536000 * 1000000)
+            if (seconds < 31536000L * 1000000)
                 return $"{(int)(seconds / 31536000 / 1000)} thousand years";
-            if (seconds < 31536000 * 1000000000)
+            if (seconds < 31536000L * 1000000000)
                 return $"{(int)(seconds / 31536000 / 1000000)} million years";
             return $"{(int)(seconds / 31536000 / 1000000000)} billion years";
         }
