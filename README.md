@@ -31,7 +31,7 @@ A secure, zero-friction password generator plugin for PowerToys Run. Generate st
 
 1. **Clone this repository**
    ```bash
-   git clone https://github.com/JoeSec/PowerToysPasswordGenerator.git
+   git clone https://github.com/Sec-Joe/PowerToys-Run-Password-Generator.git
    cd PowerToysPasswordGenerator
    ```
 
